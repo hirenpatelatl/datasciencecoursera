@@ -1,11 +1,10 @@
 pollutantmean <- function(directory, pollutant, id=1:332, debug=FALSE){
 	library(dplyr)
-	setwd(directory)
 
     fileValues<-data.frame(fileIndex=id, Pollutant=pollutant, RecordCount=NA,NAFilterCount=NA,NAFilterSum=NA,MeanVal=NA)
 
     for (Index in id){
-		    updateValues<-getValuesForFile(Index,pollutant)   
+		    updateValues<-getValuesForFile(directory,Index,pollutant)   
 		    fileValues$RecordCount[fileValues$fileIndex==Index]<-updateValues["RecordCount"]
 		    fileValues$NAFilterCount[fileValues$fileIndex==Index]<-updateValues["NAFilterCount"]
 		    fileValues$NAFilterSum[fileValues$fileIndex==Index]<-updateValues["NAFilterSum"]
@@ -38,8 +37,8 @@ genFileName<-function(currentIndex) {
     paste(zeroPad,currentIndex,".csv",sep="")   
 }
 
-getValuesForFile<-function(currentIndex,column) {
-	fileContents<-read.csv(genFileName(currentIndex))
+getValuesForFile<-function(directory,currentIndex,column) {
+	fileContents<-read.csv(paste(directory,"/",genFileName(currentIndex),sep=""))
 	list_of_NA_filtered_vals<-fileContents[complete.cases(fileContents),c(column)]
 	##print(fileContents)
 	totalCount<-length(fileContents[,1])
